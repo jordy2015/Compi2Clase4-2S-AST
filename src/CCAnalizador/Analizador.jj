@@ -1,0 +1,98 @@
+
+options {
+MULTI=true;
+STATIC = false;
+OUTPUT_DIRECTORY="C:\\Users\\Jordy Gonzalez\\Desktop\\AuxCompi\\Parte practica\\PruebasJavacc\\ASTJavaCC\\src\\CCAnalizador\\";
+}
+
+PARSER_BEGIN(Simple1)
+package CCAnalizador;
+
+public class Simple1 {
+ public static void main(String args[]) throws ParseException {
+    Simple1 parser = new Simple1(new java.io.StringReader("56+9+5"));
+    parser.S();
+    System.out.println("Exito!!");
+  }
+}
+PARSER_END(Simple1)
+
+SKIP: {" "|"\n"|"\t"|"\r"}
+TOKEN: {<NUM: (["0"-"9"])+>}
+
+nodo S():{nodo e1; }
+{
+    e1=E() <EOF>{
+                nodo n1 = new nodo();
+                n1.setEtiqueta("inicio");
+                nodo ini=(nodo) e1;
+                n1.AddHijos(ini);
+                return n1;
+                }
+}
+
+nodo E():{nodo e1; nodo e2; }
+{
+    e1=T() ("+" e2=T(){
+            nodo n1 = new nodo();
+            n1.setEtiqueta("+");
+            nodo izq = (nodo) e1;
+            nodo der = (nodo) e2;
+            n1.AddHijos(izq);
+            n1.AddHijos(der);
+            e1= (nodo) n1;
+
+        }
+        |"-" e2=T(){
+            nodo n1 = new nodo();
+            n1.setEtiqueta("-");
+            nodo izq = (nodo) e1;
+            nodo der = (nodo) e2;
+            n1.AddHijos(izq);
+            n1.AddHijos(der);
+            e1= (nodo) n1;
+        })*{return e1;}
+}
+
+nodo T():{nodo e1; nodo e2;  }
+{
+    e1=F()("*" e2=F(){
+            nodo n1 = new nodo();
+            n1.setEtiqueta("*");
+            nodo izq = (nodo) e1;
+            nodo der = (nodo) e2;
+            n1.AddHijos(izq);
+            n1.AddHijos(der);
+            e1= (nodo) n1;
+        }
+        |"/" e2=F(){
+            nodo n1 = new nodo();
+            n1.setEtiqueta("/");
+            nodo izq = (nodo) e1;
+            nodo der = (nodo) e2;
+            n1.AddHijos(izq);
+            n1.AddHijos(der);
+            e1= (nodo) n1;
+        })*
+        {return e1;}
+}
+
+nodo F():{nodo e1; Token e2;}
+{
+    e2=<NUM>{
+            nodo n1 = new nodo();
+            n1.setEtiqueta("numero");
+            n1.setValor(Integer.parseInt(e2.image));
+            n1.setColumna(e2.beginColumn);//si no obtiene la posicion exacta intentar con e2.next.beginColumn
+            n1.setLinea(e2.beginLine);    //si no obtiene la posicion exacta intentar con e2.next.beginLine
+            return n1;
+        }
+    |"(" e1=E() ")" 
+        {
+            nodo n1=(nodo)e1;
+            return n1;
+        }
+}
+
+
+

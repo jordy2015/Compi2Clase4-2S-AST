@@ -1,0 +1,5 @@
+digraph G {node[shape=box, style=filled, color=Gray95]; edge[color=blue];rankdir=UD 
+
+"0_inicio"->"1_-""1_-"->"2_+""2_+"->"3_numero=45""2_+"->"4_*""4_*"->"5_numero=6""4_*"->"6_numero=2""1_-"->"7_numero=1"
+
+}
